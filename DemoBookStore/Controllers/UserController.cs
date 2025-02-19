@@ -1,46 +1,40 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Rendering;
+﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using DemoBookStore.Data;
 using DemoBookStore.Models;
+using Microsoft.AspNetCore.Identity;
 
 namespace DemoBookStore.Controllers
 {
     public class UserController : Controller
     {
         private readonly DemoBookStoreContext _context;
+        private readonly SignInManager<UserModel> _signInManager;
+        private readonly UserManager<UserModel> _userManager;
 
-        public UserController(DemoBookStoreContext context)
+        public UserController(DemoBookStoreContext context, SignInManager<UserModel> signInManager, 
+            UserManager<UserModel> userManager)
         {
             _context = context;
+            _signInManager = signInManager; 
+            _userManager = userManager;
         }
 
         // GET: User
         public async Task<IActionResult> Index()
         {
-            return View(await _context.UserModel.ToListAsync());
+            return View(await _context.Users.ToListAsync());
         }
 
         // GET: User/Details/5
-        public async Task<IActionResult> Details(int? id)
+        public async Task<IActionResult> Details(string? id)
         {
             if (id == null)
             {
                 return NotFound();
             }
 
-            var userModel = await _context.UserModel
-                .FirstOrDefaultAsync(m => m.Id == id);
-            if (userModel == null)
-            {
-                return NotFound();
-            }
-
-            return View(userModel);
+            return View();
         }
 
         // GET: User/Create
@@ -54,26 +48,57 @@ namespace DemoBookStore.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Age,Address,Id,Firstname,Lastname,Email,Password")] UserModel userModel)
+        public async Task<IActionResult> Create([Bind("Age,Address,Id,Firstname,Lastname,Email,Password")] UserModel userModel, string password)
         {
+            userModel.LockoutEnabled = false;
+            userModel.NormalizedEmail = _userManager.NormalizeEmail(userModel.Email);
+            userModel.NormalizedUserName = userModel.Email; // Firstname + Lastname
+            userModel.PasswordHash = password;
+
+            ModelState.Remove("Reviews"); // optional
+
+
             if (ModelState.IsValid)
             {
-                _context.Add(userModel);
-                await _context.SaveChangesAsync();
-                return RedirectToAction(nameof(Index));
+                var user = new UserModel
+                {
+                    UserName = userModel.Email,
+                    Email = userModel.Email,
+                    Firstname = userModel.Firstname,
+                    Lastname = userModel.Lastname,
+                    Age = userModel.Age,
+                    Address = userModel.Address,
+                    NormalizedEmail = userModel.NormalizedEmail,
+                    PasswordHash = userModel.PasswordHash
+                };
+
+                var result = await _userManager.CreateAsync(user, password);
+
+                if (result.Succeeded)
+                {
+                    await _signInManager.SignInAsync(user, isPersistent: false);
+                    return RedirectToAction("Index", "Home");
+                }
+                else
+                {
+                    foreach (var error in result.Errors)
+                    {
+                        ModelState.AddModelError("", error.Description);
+                    }
+                }
             }
             return View(userModel);
         }
 
         // GET: User/Edit/5
-        public async Task<IActionResult> Edit(int? id)
+        public async Task<IActionResult> Edit(string? id)
         {
             if (id == null)
             {
                 return NotFound();
             }
 
-            var userModel = await _context.UserModel.FindAsync(id);
+            var userModel = await _context.Users.FindAsync(id);
             if (userModel == null)
             {
                 return NotFound();
@@ -86,7 +111,7 @@ namespace DemoBookStore.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Age,Address,Id,Firstname,Lastname,Email,Password")] UserModel userModel)
+        public async Task<IActionResult> Edit(string id, [Bind("Age,Address,Id,Firstname,Lastname,Email,Password")] UserModel userModel)
         {
             if (id != userModel.Id)
             {
@@ -102,7 +127,7 @@ namespace DemoBookStore.Controllers
                 }
                 catch (DbUpdateConcurrencyException)
                 {
-                    if (!UserModelExists(userModel.Id))
+                    if (!UserModelExists(id))
                     {
                         return NotFound();
                     }
@@ -119,39 +144,61 @@ namespace DemoBookStore.Controllers
         // GET: User/Delete/5
         public async Task<IActionResult> Delete(int? id)
         {
-            if (id == null)
-            {
-                return NotFound();
-            }
-
-            var userModel = await _context.UserModel
-                .FirstOrDefaultAsync(m => m.Id == id);
-            if (userModel == null)
-            {
-                return NotFound();
-            }
-
-            return View(userModel);
+            return View();
         }
 
         // POST: User/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> DeleteConfirmed(int id)
+        public async Task<IActionResult> DeleteConfirmed(string id)
         {
-            var userModel = await _context.UserModel.FindAsync(id);
+            var userModel = await _context.Users.FindAsync(id);
             if (userModel != null)
             {
-                _context.UserModel.Remove(userModel);
+                _context.Users.Remove(userModel);
             }
 
             await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }
 
-        private bool UserModelExists(int id)
+        // GET
+        public IActionResult Login()
         {
-            return _context.UserModel.Any(e => e.Id == id);
+            return View();
+        }
+
+        // POST
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Login(string email, string password)
+        {
+            var user = await _userManager.FindByEmailAsync(email);
+
+            if (user != null)
+            {
+                var result = await _signInManager.PasswordSignInAsync(user, password, false, false);
+
+                if (result.Succeeded)
+                {
+                    return RedirectToAction("Index", "Home");
+                }
+                else
+                {
+                    ModelState.AddModelError("", "Invalid email or Password.");
+                }
+            }
+            else
+            {
+                ModelState.AddModelError("", "User Not Found.");
+            }
+
+            return View();
+        }
+
+        private bool UserModelExists(string id)
+        {
+            return _context.Users.FirstOrDefaultAsync(user => user.Id == id) != null;
         }
     }
 }

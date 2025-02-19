@@ -1,19 +1,13 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Rendering;
+﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using DemoBookStore.Data;
 using DemoBookStore.Models;
-using Microsoft.VisualStudio.Web.CodeGenerators.Mvc.Templates.BlazorIdentity.Pages.Manage;
 using System.Security.Cryptography;
-using System.Runtime.Intrinsics.Arm;
 using System.Text;
 
 namespace DemoBookStore.Controllers
 {
+    // sdfgsdrgsgsre
     public class AuthorController : Controller
     {
         private readonly DemoBookStoreContext _context;
@@ -26,25 +20,20 @@ namespace DemoBookStore.Controllers
         // GET: Author
         public async Task<IActionResult> Index()
         {
-            return View(await _context.AuthorModel.ToListAsync());
+            return View(await _context.Authors.ToListAsync());
         }
 
         // GET: Author/Details/5
-        public async Task<IActionResult> Details(int? id)
+        public async Task<IActionResult> Details(string? id)
         {
             if (id == null)
             {
                 return NotFound();
             }
 
-            var authorModel = await _context.AuthorModel
-                .FirstOrDefaultAsync(m => m.Id == id);
-            if (authorModel == null)
-            {
-                return NotFound();
-            }
+            
 
-            return View(authorModel);
+            return View();
         }
 
         // GET: Author/Create
@@ -60,55 +49,18 @@ namespace DemoBookStore.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create([Bind("AverageScore,Id,Firstname,Lastname,Email,Password")] AuthorModel authorModel)
         {
-            authorModel.Password = ProceedData(authorModel.Password);
-
-            if (ModelState.IsValid && !CheckEmail(authorModel.Email))
-            {
-                _context.Add(authorModel);
-                await _context.SaveChangesAsync();
-                return RedirectToAction(nameof(Index));
-            }
             return View(authorModel);
         }
 
-        private string ProceedData(string password)
-        {
-            // hash password
-            using (SHA256 sha256 = SHA256.Create())
-            {
-                byte[] inputBytes = Encoding.UTF8.GetBytes(password);
-                byte[] hashbytes = sha256.ComputeHash(inputBytes);
-
-                string hashedPassword = Convert.ToHexString(hashbytes);
-                password = hashedPassword;
-            }
-
-            return password;
-        }
-
-        private bool CheckEmail(string email)
-        {
-            List<AuthorModel> Authors = _context.AuthorModel.ToListAsync().Result;
-
-            foreach (AuthorModel author in Authors)
-            {
-                if (author.Email == email)
-                {
-                    return true;
-                }
-            }
-            return false;
-        }
-
         // GET: Author/Edit/5
-        public async Task<IActionResult> Edit(int? id)
+        public async Task<IActionResult> Edit(string? id)
         {
             if (id == null)
             {
                 return NotFound();
             }
 
-            var authorModel = await _context.AuthorModel.FindAsync(id);
+            var authorModel = await _context.Authors.FindAsync(id);
             if (authorModel == null)
             {
                 return NotFound();
@@ -121,72 +73,47 @@ namespace DemoBookStore.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("AverageScore,Id,Firstname,Lastname,Email,Password")] AuthorModel authorModel)
+        public async Task<IActionResult> Edit(string id, [Bind("AverageScore,Id,Firstname,Lastname,Email,Password")] AuthorModel authorModel)
         {
-            if (id != authorModel.Id)
-            {
-                return NotFound();
-            }
-
-            if (ModelState.IsValid)
-            {
-                try
-                {
-                    _context.Update(authorModel);
-                    await _context.SaveChangesAsync();
-                }
-                catch (DbUpdateConcurrencyException)
-                {
-                    if (!AuthorModelExists(authorModel.Id))
-                    {
-                        return NotFound();
-                    }
-                    else
-                    {
-                        throw;
-                    }
-                }
-                return RedirectToAction(nameof(Index));
-            }
-            return View(authorModel);
+            return View();
         }
 
         // GET: Author/Delete/5
-        public async Task<IActionResult> Delete(int? id)
+        public async Task<IActionResult> Delete(string? id)
         {
             if (id == null)
             {
                 return NotFound();
             }
 
-            var authorModel = await _context.AuthorModel
-                .FirstOrDefaultAsync(m => m.Id == id);
-            if (authorModel == null)
-            {
-                return NotFound();
-            }
+           
 
-            return View(authorModel);
+            return View();
         }
 
         // POST: Author/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> DeleteConfirmed(int id)
+        public async Task<IActionResult> DeleteConfirmed(string id)
         {
-            var authorModel = await _context.AuthorModel.FindAsync(id);
+            var authorModel = await _context.Authors.FindAsync(id);
             if (authorModel != null)
             {
-                _context.AuthorModel.Remove(authorModel);
+                _context.Authors.Remove(authorModel);
             }
 
             await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }
 
-        private bool AuthorModelExists(int id)
+        public IActionResult Login()
         {
-            return _context.AuthorModel.Any(e => e.Id == id);
+            return View();
+        }
+
+        private bool AuthorModelExists(string id)
+        {
+            return false;
         }
     }
 }

@@ -1,21 +1,25 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 using DemoBookStore.Models;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 
 namespace DemoBookStore.Data
 {
-    public class DemoBookStoreContext : DbContext
+    public class DemoBookStoreContext : IdentityDbContext<UserModel>
     {
         public DemoBookStoreContext (DbContextOptions<DemoBookStoreContext> options)
             : base(options)
         {
         }
 
-        public DbSet<DemoBookStore.Models.BookModel> BookModel { get; set; } = default!;
-        public DbSet<DemoBookStore.Models.AuthorModel> AuthorModel { get; set; } = default!;
-        public DbSet<DemoBookStore.Models.UserModel> UserModel { get; set; } = default!;
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        {
+            base.OnModelCreating(modelBuilder);
+            modelBuilder.Entity<UserModel>().ToTable("AspNetUsers");
+            modelBuilder.Entity<AuthorModel>().ToTable("Authors");
+        }
+
+        public DbSet<DemoBookStore.Models.BookModel> Books { get; set; } = default!;
+        public DbSet<DemoBookStore.Models.AuthorModel> Authors { get; set; } = default!;
+        public DbSet<DemoBookStore.Models.UserModel> Users { get; set; } = default!;
     }
 }

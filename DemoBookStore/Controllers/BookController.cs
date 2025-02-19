@@ -18,7 +18,7 @@ namespace DemoBookStore.Controllers
         // GET: Book
         public async Task<IActionResult> Index()
         {
-            return View(await _context.BookModel.ToListAsync());
+            return View(await _context.Books.ToListAsync());
         }
 
         // GET: Book/Details/5
@@ -29,7 +29,7 @@ namespace DemoBookStore.Controllers
                 return NotFound();
             }
 
-            var bookModel = await _context.BookModel
+            var bookModel = await _context.Books
                 .FirstOrDefaultAsync(m => m.Id == id);
             if (bookModel == null)
             {
@@ -73,7 +73,7 @@ namespace DemoBookStore.Controllers
                 return NotFound();
             }
 
-            var bookModel = await _context.BookModel.FindAsync(id);
+            var bookModel = await _context.Books.FindAsync(id);
             if (bookModel == null)
             {
                 return NotFound();
@@ -125,7 +125,7 @@ namespace DemoBookStore.Controllers
                 return NotFound();
             }
 
-            var bookModel = await _context.BookModel
+            var bookModel = await _context.Books
                 .FirstOrDefaultAsync(m => m.Id == id);
             if (bookModel == null)
             {
@@ -140,10 +140,10 @@ namespace DemoBookStore.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            var bookModel = await _context.BookModel.FindAsync(id);
+            var bookModel = await _context.Books.FindAsync(id);
             if (bookModel != null)
             {
-                _context.BookModel.Remove(bookModel);
+                _context.Books.Remove(bookModel);
             }
 
             await _context.SaveChangesAsync();
@@ -152,7 +152,7 @@ namespace DemoBookStore.Controllers
 
         private bool BookModelExists(int id)
         {
-            return _context.BookModel.Any(e => e.Id == id);
+            return _context.Books.Any(e => e.Id == id);
         }
     }
 }
