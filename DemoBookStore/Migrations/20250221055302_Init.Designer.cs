@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace DemoBookStore.Migrations
 {
     [DbContext(typeof(DemoBookStoreContext))]
-    [Migration("20250219131153_FixRegistration")]
-    partial class FixRegistration
+    [Migration("20250221055302_Init")]
+    partial class Init
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
