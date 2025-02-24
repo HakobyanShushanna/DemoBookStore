@@ -1,0 +1,43 @@
+﻿@model List<DemoBookStore.Models.BookModel>
+
+<h2>My Current Order</h2>
+
+@if (!Model.Any())
+{
+    <p>Your order is empty.</p>
+}
+else
+{
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Title</th>
+                <th>Price</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var book in Model)
+            {
+                <tr>
+                    <td>@book.Title</td>
+                    <td>@book.Price$</td>
+                    <td>
+                        <form method="post" asp-action="RemoveFromOrder">
+                            <input type="hidden" name="id" value="@book.Id" />
+                            <button type="submit" class="btn btn-danger">Remove</button>
+                        </form>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+
+    <form method="post" asp-action="ClearOrder">
+        <button type="submit" class="btn btn-warning">Clear Order</button>
+    </form>
+
+    <form method="post" asp-controller="Orders" asp-action="PlaceOrder">
+        <button type="submit" class="btn btn-success">Place Order</button>
+    </form>
+}

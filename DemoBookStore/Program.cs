@@ -12,6 +12,8 @@ builder.Services.AddIdentity<UserModel, IdentityRole>().
     AddEntityFrameworkStores<DemoBookStoreContext>().
     AddDefaultTokenProviders();
 
+builder.Services.AddSession();
+
 // Add services to the container.
 builder.Services.AddControllersWithViews(); 
 
@@ -25,6 +27,7 @@ if (!app.Environment.IsDevelopment())
     app.UseHsts();
 }
 
+app.UseSession();
 app.UseHttpsRedirection();
 app.UseStaticFiles();
 
