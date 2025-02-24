@@ -14,12 +14,14 @@ namespace DemoBookStore.Data
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
-            modelBuilder.Entity<UserModel>().ToTable("AspNetUsers");
+            modelBuilder.Entity<UserModel>().ToTable("Users");
             modelBuilder.Entity<AuthorModel>().ToTable("Authors");
         }
 
         public DbSet<DemoBookStore.Models.BookModel> Books { get; set; } = default!;
         public DbSet<DemoBookStore.Models.AuthorModel> Authors { get; set; } = default!;
         public DbSet<DemoBookStore.Models.UserModel> Users { get; set; } = default!;
+        public DbSet<DemoBookStore.Models.OrderModel> Orders { get; set; } = default!;
+
     }
 }
