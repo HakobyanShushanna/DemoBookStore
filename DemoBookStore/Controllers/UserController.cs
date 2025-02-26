@@ -56,7 +56,7 @@ namespace DemoBookStore.Controllers
             userModel.PasswordHash = password;
 
             ModelState.Remove("Reviews"); // optional
-
+            ModelState.Remove("Orders");
 
             if (ModelState.IsValid)
             {

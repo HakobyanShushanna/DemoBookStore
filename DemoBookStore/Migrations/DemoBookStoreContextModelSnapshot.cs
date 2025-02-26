@@ -155,6 +155,9 @@ namespace DemoBookStore.Migrations
                     b.Property<bool>("IsElectronic")
                         .HasColumnType("bit");
 
+                    b.Property<int?>("OrderModelId")
+                        .HasColumnType("int");
+
                     b.Property<decimal>("Price")
                         .HasColumnType("decimal(18,2)");
 
@@ -164,7 +167,31 @@ namespace DemoBookStore.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("OrderModelId");
+
                     b.ToTable("Books");
+                });
+
+            modelBuilder.Entity("DemoBookStore.Models.OrderModel", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime>("Date")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("UserId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("OrderModel");
                 });
 
             modelBuilder.Entity("DemoBookStore.Models.ReviewModel", b =>
@@ -446,6 +473,24 @@ namespace DemoBookStore.Migrations
                     b.Navigation("Author");
                 });
 
+            modelBuilder.Entity("DemoBookStore.Models.BookModel", b =>
+                {
+                    b.HasOne("DemoBookStore.Models.OrderModel", null)
+                        .WithMany("Books")
+                        .HasForeignKey("OrderModelId");
+                });
+
+            modelBuilder.Entity("DemoBookStore.Models.OrderModel", b =>
+                {
+                    b.HasOne("DemoBookStore.Models.UserModel", "User")
+                        .WithMany("Orders")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("User");
+                });
+
             modelBuilder.Entity("DemoBookStore.Models.ReviewModel", b =>
                 {
                     b.HasOne("DemoBookStore.Models.BookModel", "Book")
@@ -538,8 +583,15 @@ namespace DemoBookStore.Migrations
                     b.Navigation("Reviews");
                 });
 
+            modelBuilder.Entity("DemoBookStore.Models.OrderModel", b =>
+                {
+                    b.Navigation("Books");
+                });
+
             modelBuilder.Entity("DemoBookStore.Models.UserModel", b =>
                 {
+                    b.Navigation("Orders");
+
                     b.Navigation("Reviews");
                 });
 #pragma warning restore 612, 618

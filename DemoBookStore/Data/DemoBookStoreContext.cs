@@ -17,9 +17,9 @@ namespace DemoBookStore.Data
             modelBuilder.Entity<UserModel>().ToTable("AspNetUsers");
             modelBuilder.Entity<AuthorModel>().ToTable("Authors");
         }
-
-        public DbSet<DemoBookStore.Models.BookModel> Books { get; set; } = default!;
-        public DbSet<DemoBookStore.Models.AuthorModel> Authors { get; set; } = default!;
-        public DbSet<DemoBookStore.Models.UserModel> Users { get; set; } = default!;
+        public DbSet<AuthorModel> Authors { get; set; } = default!;
+        public DbSet<UserModel> Users { get; set; } = default!;
+        public DbSet<OrderModel> OrderModel { get; set; } = default!;
+        public DbSet<BookModel> Books { get; set; } = default!;
     }
 }
