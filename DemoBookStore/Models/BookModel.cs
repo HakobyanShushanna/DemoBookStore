@@ -12,11 +12,6 @@
         public bool IsElectronic { get; set; }
         public bool IsAvailable { get; set; }
         public int? AgeRestriction { get; set; }
-
-        public override bool Equals(object? obj)
-        {
-            if((obj is null) || !(obj is BookModel)) return false;
-            return ((BookModel)obj).Id == Id; 
-        }
+        public List<OrderModel> Orders { get; set; } = new List<OrderModel>();
     }
 }

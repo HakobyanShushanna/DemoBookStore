@@ -3,6 +3,7 @@ using DemoBookStore.Helpers;
 using DemoBookStore.Models;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 namespace DemoBookStore.Controllers
 {
@@ -34,7 +35,7 @@ namespace DemoBookStore.Controllers
             OrderModel newOrder = new OrderModel
             {
                 User = user,
-                Books = orderBooks,
+                Books = orderBooks.Select(b => _context.Books.Find(b.Id)).ToList(),
                 Date = DateTime.Now
             };
 
@@ -43,6 +44,9 @@ namespace DemoBookStore.Controllers
             return RedirectToAction("Index");
         }
 
-
+        public async Task<IActionResult> ViewOrders()
+        {
+            return View(await _context.OrderModel.ToListAsync());
+        }
     }
 }

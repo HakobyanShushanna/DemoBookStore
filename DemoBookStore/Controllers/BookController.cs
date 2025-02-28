@@ -3,16 +3,18 @@ using Microsoft.EntityFrameworkCore;
 using DemoBookStore.Data;
 using DemoBookStore.Models;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 
 namespace DemoBookStore.Controllers
 {
     public class BookController : Controller
     {
         private readonly DemoBookStoreContext _context;
-
-        public BookController(DemoBookStoreContext context)
+        private readonly UserManager<UserModel> _userManager;
+        public BookController(DemoBookStoreContext context, UserManager<UserModel> userManager)
         {
             _context = context;
+            _userManager = userManager;
         }
 
         // GET: Book
@@ -40,14 +42,20 @@ namespace DemoBookStore.Controllers
         }
 
         // GET: Book/Create
+        [Authorize]
         public IActionResult Create()
         {
+            if (IsUser())
+            {
+                return Unauthorized();
+            }
             return View();
         }
 
         // POST: Book/Create
         // To protect from overposting attacks, enable the specific properties you want to bind to.
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
+
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create([Bind("Id,Title,Description,Genre,Price,IsElectronic,IsAvailable,AgeRestriction")] BookModel bookModel)
@@ -58,7 +66,7 @@ namespace DemoBookStore.Controllers
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
-            else if(bookModel.AgeRestriction < 0)
+            else if (bookModel.AgeRestriction < 0)
             {
                 bookModel.AgeRestriction = null;
             }
@@ -66,8 +74,13 @@ namespace DemoBookStore.Controllers
         }
 
         // GET: Book/Edit/5
+        [Authorize]
         public async Task<IActionResult> Edit(int? id)
         {
+            if (IsUser())
+            {
+                return Unauthorized();
+            }
             if (id == null)
             {
                 return NotFound();
@@ -120,6 +133,10 @@ namespace DemoBookStore.Controllers
         [Authorize]
         public async Task<IActionResult> Delete(int? id)
         {
+            if (IsUser())
+            {
+                return Unauthorized();
+            }
             if (id == null)
             {
                 return NotFound();
@@ -153,6 +170,16 @@ namespace DemoBookStore.Controllers
         private bool BookModelExists(int id)
         {
             return _context.Books.Any(e => e.Id == id);
+        }
+
+        private bool IsUser()
+        {
+            var user = _userManager.GetUserAsync(User);
+            if (user != null)
+            {
+                return true;
+            }
+            return false;
         }
     }
 }
