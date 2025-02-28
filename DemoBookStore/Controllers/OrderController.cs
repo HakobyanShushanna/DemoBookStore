@@ -34,7 +34,7 @@ namespace DemoBookStore.Controllers
             OrderModel newOrder = new OrderModel
             {
                 User = user,
-                Books = orderBooks,
+                Books = orderBooks.Select(b => _context.Books.Find(b.Id)).ToList(),
                 Date = DateTime.Now
             };
 

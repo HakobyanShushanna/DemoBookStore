@@ -3,6 +3,8 @@ using Microsoft.EntityFrameworkCore;
 using DemoBookStore.Data;
 using DemoBookStore.Models;
 using Microsoft.AspNetCore.Authorization;
+using System.Linq;
+using Microsoft.AspNetCore.Mvc.Rendering;
 
 namespace DemoBookStore.Controllers
 {
@@ -42,28 +44,45 @@ namespace DemoBookStore.Controllers
         // GET: Book/Create
         public IActionResult Create()
         {
+            var authors = _context.Authors
+                .Select(a => new SelectListItem
+                {
+                    Value = a.Id,
+                    Text = a.Firstname + " " + a.Lastname
+                })
+                .ToList();
+
+            ViewData["Authors"] = authors;
+
             return View();
         }
 
+
         // POST: Book/Create
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,Title,Description,Genre,Price,IsElectronic,IsAvailable,AgeRestriction")] BookModel bookModel)
+        public async Task<IActionResult> Create([Bind("Id,Title,Description,Genre,Price,IsElectronic,IsAvailable,AgeRestriction")] BookModel bookModel, List<string> AuthorIds)
         {
             if (ModelState.IsValid)
             {
+                var authors = await _context.Authors.Where(a => AuthorIds.Contains(a.Id)).ToListAsync();
+
+                bookModel.Authors = authors;
+
                 _context.Add(bookModel);
                 await _context.SaveChangesAsync();
+
                 return RedirectToAction(nameof(Index));
             }
-            else if(bookModel.AgeRestriction < 0)
-            {
-                bookModel.AgeRestriction = null;
-            }
+
+            ViewData["Authors"] = await _context.Authors
+                .Select(a => new { a.Id, FullName = a.Firstname + " " + a.Lastname })
+                .ToListAsync();
+
             return View(bookModel);
         }
+
+
 
         // GET: Book/Edit/5
         public async Task<IActionResult> Edit(int? id)
