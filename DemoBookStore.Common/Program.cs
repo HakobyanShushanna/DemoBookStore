@@ -1,4 +1,18 @@
+using DemoBookStore.Models;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
+using DemoBookStore.Data;
+
 var builder = WebApplication.CreateBuilder(args);
+
+builder.Services.AddDbContext<DemoBookStoreContext>(options =>
+    options.UseSqlServer(builder.Configuration.GetConnectionString("DemoBookStoreContext") ?? throw new InvalidOperationException("Connection string 'DemoBookStoreContext' not found.")));
+
+builder.Services.AddIdentity<Person, IdentityRole>().
+    AddEntityFrameworkStores<DemoBookStoreContext>().
+    AddDefaultTokenProviders();
+
+builder.Services.AddSession();
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();
@@ -15,6 +29,8 @@ if (!app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 app.UseStaticFiles();
+
+app.UseSession();
 
 app.UseRouting();
 

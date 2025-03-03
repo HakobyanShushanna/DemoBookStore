@@ -14,7 +14,7 @@ namespace DemoBookStore.Controllers
         }
         public IActionResult Login()
         {
-            return View();
+            return RedirectToAction("Index", "Home", new { area = "Common" });
         }
 
         public IActionResult Register()

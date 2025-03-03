@@ -15,7 +15,7 @@ builder.Services.AddIdentity<UserModel, IdentityRole>().
 builder.Services.AddSession();
 
 // Add services to the container.
-builder.Services.AddControllersWithViews(); 
+builder.Services.AddControllersWithViews();
 
 var app = builder.Build();
 
