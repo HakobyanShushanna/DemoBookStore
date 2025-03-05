@@ -42,18 +42,10 @@ namespace DemoBookStore.Controllers
         }
 
         // GET: Book/Create
-        public IActionResult Create()
+        public async Task<IActionResult> Create()
         {
-            var authors = _context.Authors
-                .Select(a => new SelectListItem
-                {
-                    Value = a.Id,
-                    Text = a.Firstname + " " + a.Lastname
-                })
-                .ToList();
-
+            List<AuthorModel> authors = await _context.Authors.ToListAsync();
             ViewData["Authors"] = authors;
-
             return View();
         }
 
@@ -66,7 +58,6 @@ namespace DemoBookStore.Controllers
             if (ModelState.IsValid)
             {
                 var authors = await _context.Authors.Where(a => AuthorIds.Contains(a.Id)).ToListAsync();
-
                 bookModel.Authors = authors;
 
                 _context.Add(bookModel);
@@ -75,10 +66,7 @@ namespace DemoBookStore.Controllers
                 return RedirectToAction(nameof(Index));
             }
 
-            ViewData["Authors"] = await _context.Authors
-                .Select(a => new { a.Id, FullName = a.Firstname + " " + a.Lastname })
-                .ToListAsync();
-
+            ViewData["Authors"] = await _context.Authors.ToListAsync();
             return View(bookModel);
         }
 
@@ -172,6 +160,20 @@ namespace DemoBookStore.Controllers
         private bool BookModelExists(int id)
         {
             return _context.Books.Any(e => e.Id == id);
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> SearchAuthors(string query)
+        {
+            if (string.IsNullOrWhiteSpace(query))
+                return Json(new List<object>());
+
+            var authors = await _context.Authors
+                .Where(a => a.Firstname.Contains(query) || a.Lastname.Contains(query))
+                .Select(a => new { a.Id, a.Firstname, a.Lastname, a.Email })
+                .ToListAsync();
+
+            return Json(authors);
         }
     }
 }
