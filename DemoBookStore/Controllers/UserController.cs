@@ -20,12 +20,6 @@ namespace DemoBookStore.Controllers
             _userManager = userManager;
         }
 
-        // GET: User
-        public async Task<IActionResult> Index()
-        {
-            return View(await _context.Users.ToListAsync());
-        }
-
         // GET: User/Details/5
         public async Task<IActionResult> Details(string? id)
         {
@@ -139,27 +133,6 @@ namespace DemoBookStore.Controllers
                 return RedirectToAction(nameof(Index));
             }
             return View(userModel);
-        }
-
-        // GET: User/Delete/5
-        public async Task<IActionResult> Delete(int? id)
-        {
-            return View();
-        }
-
-        // POST: User/Delete/5
-        [HttpPost, ActionName("Delete")]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> DeleteConfirmed(string id)
-        {
-            var userModel = await _context.Users.FindAsync(id);
-            if (userModel != null)
-            {
-                _context.Users.Remove(userModel);
-            }
-
-            await _context.SaveChangesAsync();
-            return RedirectToAction(nameof(Index));
         }
 
         // GET

@@ -3,7 +3,11 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.10.35122.118
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DemoBookStore", "DemoBookStore\DemoBookStore.csproj", "{067278B8-E815-436C-AE9D-32CBA207427A}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DemoBookStore.Users", "DemoBookStore\DemoBookStore.Users.csproj", "{067278B8-E815-436C-AE9D-32CBA207427A}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DemoBookStore.Models", "DemoBookStore.Models\DemoBookStore.Models.csproj", "{2AC16E8D-1FD0-492F-828A-DDD669AFF205}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DemoBookStore.Authors", "DemoBookStore.Authors\DemoBookStore.Authors.csproj", "{86C14495-FADD-4300-8E36-A6FB7E283FBF}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -15,6 +19,14 @@ Global
 		{067278B8-E815-436C-AE9D-32CBA207427A}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{067278B8-E815-436C-AE9D-32CBA207427A}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{067278B8-E815-436C-AE9D-32CBA207427A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2AC16E8D-1FD0-492F-828A-DDD669AFF205}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2AC16E8D-1FD0-492F-828A-DDD669AFF205}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2AC16E8D-1FD0-492F-828A-DDD669AFF205}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2AC16E8D-1FD0-492F-828A-DDD669AFF205}.Release|Any CPU.Build.0 = Release|Any CPU
+		{86C14495-FADD-4300-8E36-A6FB7E283FBF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{86C14495-FADD-4300-8E36-A6FB7E283FBF}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{86C14495-FADD-4300-8E36-A6FB7E283FBF}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{86C14495-FADD-4300-8E36-A6FB7E283FBF}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

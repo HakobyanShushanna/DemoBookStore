@@ -8,11 +8,11 @@ namespace DemoBookStore.Controllers
 {
     public class AccountController : Controller
     {
-        private readonly SignInManager<UserModel> _signInManagerUser;
-        private readonly UserManager<UserModel> _userManager;
+        private readonly SignInManager<AuthorModel> _signInManagerUser;
+        private readonly UserManager<AuthorModel> _userManager;
         private readonly DemoBookStoreContext _context;
 
-        public AccountController(SignInManager<UserModel> signInManager, UserManager<UserModel> userManager, 
+        public AccountController(SignInManager<AuthorModel> signInManager, UserManager<AuthorModel> userManager, 
             DemoBookStoreContext context)
         {
             _signInManagerUser = signInManager;
@@ -44,19 +44,10 @@ namespace DemoBookStore.Controllers
             var user = await _userManager.GetUserAsync(User);
             if (user != null)
             {
-                UserModel? userToRemove = await _context.Users.FirstOrDefaultAsync(u => u.Id == user.Id);
+                AuthorModel? userToRemove = await _context.Authors.FirstOrDefaultAsync(u => u.Id == user.Id);
                 if (userToRemove != null)
                 {
-                    List<OrderModel> orderModels = await _context.OrderModel.ToListAsync();
-
-                    foreach (OrderModel orderModel in orderModels)
-                    {
-                        if(orderModel.User.Id == userToRemove.Id)
-                        {
-                            _context.OrderModel.Remove(orderModel);
-                        }
-                    }
-                    _context.Users.Remove(userToRemove);
+                    _context.Authors.Remove(userToRemove);
                     await _context.SaveChangesAsync();
                     LogoutConfirmed();
                 }
